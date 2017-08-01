@@ -1,0 +1,12 @@
+{application, crossword,
+ [{description, "Crypto made slightly less insane"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel, stdlib, crypto]},
+  {env,[]},
+  {modules, [crossword, crossword_aead_server]},
+  {maintainers, ["James Laver", "Antonis Kalou"]},
+  {licenses, ["MIT"]},
+  {links, ["https://github.com/irresponsible/crossword/"]}
+ ]}.
