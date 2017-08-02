@@ -13,15 +13,24 @@
 
 -spec encrypt(term(), aead_plain()) -> aead_cipher().
 encrypt(Name, Plain) ->
-  gen_server:call(Name, {encrypt,Plain}).
+  {ok, Ref} = gen_server:call(Name, {encrypt,Plain}),
+  receive
+    {Ref,Ret} -> Ret
+  end.
 
 -spec encrypt(term(), binary(), aead_plain()) -> aead_cipher().
 encrypt(Name, IV, Plain) ->
-  gen_server:call(Name,{encrypt, IV, Plain}).
+  {ok,Ref} = gen_server:call(Name,{encrypt, IV, Plain}),
+  receive
+    {Ref,Ret} -> Ret
+  end.
 
 -spec decrypt(term(), aead_cipher()) -> aead_plain().
 decrypt(Name, Cipher) ->
-  gen_server:call(Name, {decrypt,Cipher}).
+  {ok, Ref} = gen_server:call(Name, {decrypt,Cipher}),
+  receive
+    {Ref,Ret} -> Ret
+  end.
 
 %%% Link api
 
@@ -35,16 +44,32 @@ start_link(Key, Name) ->
 %%% Implementation
 
 -spec handle_encrypt(pid(), aead_key(), aead_plain()) -> aead_encrypt_result().
-handle_encrypt(From, Key, Plain) ->
-  spawn(fun () -> From ! crossword:aead_encrypt(Key, Plain) end).
+handle_encrypt({From, _}, Key, Plain) ->
+  Ref = make_ref(),
+  spawn(fun () ->
+	    Ret = crossword:aead_encrypt(Key, Plain),
+	    From ! {Ref,Ret}
+	end),
+  {reply, {ok, Ref}, Key}.
 
 -spec handle_encrypt(pid(), aead_key(), aead_iv(), aead_plain()) -> aead_encrypt_result().
-handle_encrypt(From, Key, IV, Plain) ->
-  spawn(fun () -> From ! crossword:aead_encrypt(Key, IV, Plain)	end).
+handle_encrypt({From, _},Key, IV, Plain) ->
+  Ref = make_ref(),
+  io:format("From: ~w~n",[From]),
+  spawn(fun () ->
+	    R = crossword:aead_encrypt(Key, IV, Plain),
+	    From ! {Ref,R}
+	end),
+  {reply, {ok, Ref}, Key}.
 
 -spec handle_decrypt(pid(), aead_key(), aead_cipher()) -> aead_decrypt_result().
-handle_decrypt(From, Key, Cipher) ->
-  spawn(fun () -> From ! crossword:aead_encrypt(Key, Cipher) end).
+handle_decrypt({From,_}, Key, Cipher) ->
+  Ref = make_ref(),
+  spawn(fun () ->
+	    R = crossword:aead_decrypt(Key, Cipher),
+	    From ! {Ref, R}
+	end),
+  {reply, {ok, Ref}, Key}.
 
 %%% gen_server callbacks
 
@@ -53,13 +78,11 @@ init(Key) ->
   {ok, Key}.
 
 handle_call(Msg, From, Key) ->
+  io:format("handle_call(~w,~w,~w)~n", [Msg, From, Key]),
   case Msg of
-    {encrypt, Plain} -> handle_encrypt(From, Key, Plain),
-			{noreply,Key};
-    {encrypt, IV, Plain} -> handle_encrypt(From, Key, IV, Plain),
-			    {noreply,Key};
-    {decrypt, Cipher} -> handle_decrypt(From, Key, Cipher),
-			 {noreply,Key};
+    {encrypt, Plain} -> handle_encrypt(From, Key, Plain);
+    {encrypt, IV, Plain} -> handle_encrypt(From, Key, IV, Plain);
+    {decrypt, Cipher} -> handle_decrypt(From, Key, Cipher);
     _ -> {reply,{error, unknown_action, Msg},Key}
   end.
       
