@@ -60,44 +60,80 @@ Types:
 
 Functions:
 
-* `crossword:aead_key(Algo) -> Key`
-  Algo: `aead_algo()`, 
-  Example: `crossword:aead_key(aes_gcm)`
-  Returns: `aead_key()`
-* `crossword:aead_iv(Algo)  -> IV`
-  Algo: `aead_algo()`, 
-  Example: `crossword:aead_iv(aes_gcm)`
-  Returns: `aead_iv()`
-* `crossword:aead_encrypt(Key,{Msg,Extra}) -> aead_encrypt_result()`
-  Key: `aead_key()`, as gotten from `aead_key/1`
-  Msg: `binary()`, message you want to encrypt
-  Extra: `binary()`, extra data to authenticate (but not encrypt)
-  Returns: `aead_encrypt_result()`
-  Example: `crossword:aead_encrypt(aead_key(aes_gcm), {<<"hello">>,<<"world">>})`
-* `crossword:aead_encrypt(Key, IV, {Msg, Extra}) -> aead_encrypt_result()`
-  Key: `aead_key()`, as gotten from `aead_key/1`
-  IV: `aead_iv()`, as gotten from `aead_iv/1`
-  Msg: `binary()`, message you want to encrypt
-  Extra: binary(), extra data to authenticate (but not encrypt)
-  Returns: `aead_encrypt_result()`
-  Example: `crossword:aead_encrypt(aead_key(aes_gcm), aead_iv(aes_gcm), {<<"hello">>,<<"world">>})`
-* `crossword:aead_decrypt(Key, Cipher) -> aead_decrypt_result()`
-  Key: `aead_key()`, as gotten from `aead_key/1`
-  Cipher: `aead_cipher()`, as gotten from `aead_encrypt/2`, `aead_encrypt/3`
-  Returns: `aead_decrypt_result()`
-  Example: `crossword:aead_decrypt(Key, Encrypted)`
-* `crossword:aead_valid(Key) -> boolean()`
-  Key: `aead_key()`, as gotten from `aead_key/1`
-  Example: `crossword:aead_valid(aead_key(aes_gcm))`
-  Returns: `boolean()`
-* `crossword:aead_iv_length(Algo :: aead_algo())`
-  Algo: `aead_algo()`
-  Returns: `length_result()`
-  Example: `crossword:aead_iv_length(aes_gcm)`
-* `crossword:aead_key_length(Algo :: aead_algo())`
-  Algo: `aead_algo()` 
-  Example: `crossword:aead_key_length(aes_gcm)`
-  Returns: `length_result()`
+##### `crossword:aead_key(Algo) -> Key`
+
+Algo: `aead_algo()`, 
+
+Example: `crossword:aead_key(aes_gcm)`
+
+Returns: `aead_key()`
+
+##### `crossword:aead_iv(Algo)  -> IV`
+
+Algo: `aead_algo()`, 
+
+Example: `crossword:aead_iv(aes_gcm)`
+
+Returns: `aead_iv()`
+
+##### `crossword:aead_encrypt(Key,{Msg,Extra}) -> aead_encrypt_result()`
+
+Key: `aead_key()`, as gotten from `aead_key/1`
+
+Msg: `binary()`, message you want to encrypt
+
+Extra: `binary()`, extra data to authenticate (but not encrypt)
+
+Returns: `aead_encrypt_result()`
+
+Example: `crossword:aead_encrypt(aead_key(aes_gcm), {<<"hello">>,<<"world">>})`
+
+##### `crossword:aead_encrypt(Key, IV, {Msg, Extra}) -> aead_encrypt_result()`
+
+Key: `aead_key()`, as gotten from `aead_key/1`
+
+IV: `aead_iv()`, as gotten from `aead_iv/1`
+
+Msg: `binary()`, message you want to encrypt
+
+Extra: binary(), extra data to authenticate (but not encrypt)
+
+Returns: `aead_encrypt_result()`
+
+Example: `crossword:aead_encrypt(aead_key(aes_gcm), aead_iv(aes_gcm), {<<"hello">>,<<"world">>})`
+##### `crossword:aead_decrypt(Key, Cipher) -> aead_decrypt_result()`
+
+Key: `aead_key()`, as gotten from `aead_key/1`
+
+Cipher: `aead_cipher()`, as gotten from `aead_encrypt/2`, `aead_encrypt/3`
+
+Returns: `aead_decrypt_result()`
+
+Example: `crossword:aead_decrypt(Key, Encrypted)`
+
+##### `crossword:aead_valid(Key) -> boolean()`
+
+Key: `aead_key()`, as gotten from `aead_key/1`
+
+Example: `crossword:aead_valid(aead_key(aes_gcm))`
+
+Returns: `boolean()`
+
+##### `crossword:aead_iv_length(Algo :: aead_algo())`
+
+Algo: `aead_algo()`
+
+Returns: `length_result()`
+
+Example: `crossword:aead_iv_length(aes_gcm)`
+
+##### `crossword:aead_key_length(Algo :: aead_algo())`
+
+Algo: `aead_algo()` 
+
+Example: `crossword:aead_key_length(aes_gcm)`
+
+Returns: `length_result()`
 
 ### Module: `crossword_aead_server`
 
@@ -117,6 +153,7 @@ A simple server that remembers an aead key for encryption/decryption tasks
 There are no sufficiently advanced general purpose quantum computers yet, however, it's useful to plan for their potential existence.
 
 | Algorithm           | Break     | Effect                               |
+|---------------------|-----------|--------------------------------------|
 | `aes_gcm`           | Destroyed | Past messages become readable        |
 | `chacha20_poly1305` | MAC only  | Future messages may be tampered with |
 

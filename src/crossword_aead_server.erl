@@ -55,7 +55,6 @@ handle_encrypt({From, _}, Key, Plain) ->
 -spec handle_encrypt(pid(), aead_key(), aead_iv(), aead_plain()) -> aead_encrypt_result().
 handle_encrypt({From, _},Key, IV, Plain) ->
   Ref = make_ref(),
-  io:format("From: ~w~n",[From]),
   spawn(fun () ->
 	    R = crossword:aead_encrypt(Key, IV, Plain),
 	    From ! {Ref,R}
@@ -78,7 +77,6 @@ init(Key) ->
   {ok, Key}.
 
 handle_call(Msg, From, Key) ->
-  io:format("handle_call(~w,~w,~w)~n", [Msg, From, Key]),
   case Msg of
     {encrypt, Plain} -> handle_encrypt(From, Key, Plain);
     {encrypt, IV, Plain} -> handle_encrypt(From, Key, IV, Plain);
