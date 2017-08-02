@@ -36,6 +36,7 @@ Cryptographic functions wrapped for ease-of-use
 #### aead api
 
 | Feature      | Description                             |
+|--------------|-----------------------------------------|
 | Key Model    | Secret                                  |
 | Tamperproof? | Yes                                     |
 | Bonus        | Also authenticates extra plaintext data |
